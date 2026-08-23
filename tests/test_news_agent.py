@@ -96,3 +96,23 @@ def test_render_bold_escapes_html():
     result = render_bold("<script>alert(1)</script> **bold**")
     assert "<script>" not in str(result)
     assert "<strong>bold</strong>" in str(result)
+
+
+def test_observability_disabled_by_default_in_tests():
+    from news_agent.config import ENABLE_OBSERVABILITY
+
+    assert ENABLE_OBSERVABILITY is False
+
+
+def test_setup_observability_is_noop_when_disabled(monkeypatch):
+    import news_agent.observability as observability
+
+    monkeypatch.setattr(observability, "ENABLE_OBSERVABILITY", False)
+    monkeypatch.setattr(observability, "_instrumented", False)
+
+    from fastapi import FastAPI
+
+    app = FastAPI()
+    observability.setup_observability(app)
+
+    assert observability._instrumented is False

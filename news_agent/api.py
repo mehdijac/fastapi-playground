@@ -9,6 +9,7 @@ from markupsafe import Markup, escape
 
 from news_agent.agent import run_agent
 from news_agent.models import Digest
+from news_agent.observability import setup_observability
 from news_agent.storage import get_latest_digest, save_digest
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,6 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="AI Engineering News Agent")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+setup_observability(app)
 
 _BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 
