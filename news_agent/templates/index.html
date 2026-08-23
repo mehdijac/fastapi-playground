@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Engineering Digest</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>AI Engineering Digest</h1>
+    <form action="/refresh" method="post" onsubmit="this.querySelector('button').textContent='Refreshing… (can take a minute)'; this.querySelector('button').disabled=true;">
+      <button type="submit">Refresh digest</button>
+    </form>
+  </header>
+
+  {% if digest %}
+    <p class="timestamp">Generated {{ digest.created_at.strftime("%Y-%m-%d %H:%M UTC") }}</p>
+
+    <section class="synthesis">
+      {% for paragraph in digest.synthesis.split("\n\n") %}
+        {% if paragraph.strip() %}<p>{{ paragraph | render_bold }}</p>{% endif %}
+      {% endfor %}
+    </section>
+
+    <h2>Sources</h2>
+    <ul class="sources">
+      {% for item in digest.items %}
+        <li>
+          <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+          <span class="source-tag">{{ item.source }}</span>
+          <p class="item-summary">{{ item.summary }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">No digest yet. Click "Refresh digest" to generate the first one (calls a local Ollama model, may take a minute).</p>
+  {% endif %}
+</body>
+</html>
